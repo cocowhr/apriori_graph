@@ -1,0 +1,65 @@
+﻿生成启动时间为 2016-11-14 21:39:26。
+     1>项目“E:\C\apriori\apriori\apriori.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         E:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+     1>e:\c\apriori\apriori\main.cpp(31): warning C4018: “<=”: 有符号/无符号不匹配
+     1>e:\c\apriori\apriori\main.cpp(136): warning C4101: “vhead”: 未引用的局部变量
+                 e:\c\apriori\apriori\main.cpp(134): 编译类 模板 成员函数“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::CreateDG(std::vector<_Ty> &,std::map<_Kty,double> &,Large &)”时
+                 with
+                 [
+                     VertexType=std::string,
+                     VertexType2=double,
+                     VertexType3=std::bitset<10>,
+                     InfoType=int,
+                     _Ty=Data *,
+                     _Kty=std::string
+                 ]
+                 e:\c\apriori\apriori\main.cpp(528): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::CreateDG(std::vector<_Ty> &,std::map<_Kty,double> &,Large &)”的引用
+                 with
+                 [
+                     VertexType=std::string,
+                     VertexType2=double,
+                     VertexType3=std::bitset<10>,
+                     InfoType=int,
+                     _Ty=Data *,
+                     _Kty=std::string
+                 ]
+                 e:\c\apriori\apriori\main.cpp(527): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
+                 with
+                 [
+                     VertexType=std::string,
+                     VertexType2=double,
+                     VertexType3=std::bitset<10>,
+                     InfoType=int
+                 ]
+     1>e:\c\apriori\apriori\main.cpp(136): warning C4101: “vtail”: 未引用的局部变量
+     1>e:\c\apriori\apriori\main.cpp(240): warning C4018: “<”: 有符号/无符号不匹配
+                 e:\c\apriori\apriori\main.cpp(166): 编译类 模板 成员函数“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”时
+                 with
+                 [
+                     VertexType=std::string,
+                     VertexType2=double,
+                     VertexType3=std::bitset<10>,
+                     InfoType=int,
+                     _Ty=Data *,
+                     _Kty=std::string
+                 ]
+                 e:\c\apriori\apriori\main.cpp(532): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
+                 with
+                 [
+                     VertexType=std::string,
+                     VertexType2=double,
+                     VertexType3=std::bitset<10>,
+                     InfoType=int,
+                     _Ty=Data *,
+                     _Kty=std::string
+                 ]
+       Link:
+         E:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\C\apriori\Debug\apriori.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\C\apriori\Debug\apriori.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\C\apriori\Debug\apriori.lib" /MACHINE:X86 Debug\main.obj
+         apriori.vcxproj -> E:\C\apriori\Debug\apriori.exe
+     1>已完成生成项目“E:\C\apriori\apriori\apriori.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.04
