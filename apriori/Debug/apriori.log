@@ -1,32 +1,32 @@
 ﻿  main.cpp
-e:\c\apriori\apriori\main.cpp(32): warning C4018: “<=”: 有符号/无符号不匹配
-e:\c\apriori\apriori\main.cpp(258): warning C4018: “<”: 有符号/无符号不匹配
-          e:\c\apriori\apriori\main.cpp(185): 编译类 模板 成员函数“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”时
+e:\c\apriori\apriori\main.cpp(39): warning C4018: “<=”: 有符号/无符号不匹配
+e:\c\apriori\apriori\main.cpp(271): warning C4018: “<”: 有符号/无符号不匹配
+          e:\c\apriori\apriori\main.cpp(195): 编译类 模板 成员函数“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”时
           with
           [
               VertexType=int,
               VertexType2=double,
-              VertexType3=std::bitset<10>,
+              VertexType3=std::bitset<1280>,
               InfoType=int,
               _Ty=Data *,
               _Kty=int
           ]
-          e:\c\apriori\apriori\main.cpp(575): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
+          e:\c\apriori\apriori\main.cpp(644): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
           with
           [
               VertexType=int,
               VertexType2=double,
-              VertexType3=std::bitset<10>,
+              VertexType3=std::bitset<1280>,
               InfoType=int,
               _Ty=Data *,
               _Kty=int
           ]
-          e:\c\apriori\apriori\main.cpp(570): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
+          e:\c\apriori\apriori\main.cpp(637): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
           with
           [
               VertexType=int,
               VertexType2=double,
-              VertexType3=std::bitset<10>,
+              VertexType3=std::bitset<1280>,
               InfoType=int
           ]
   apriori.vcxproj -> E:\C\apriori\Debug\apriori.exe

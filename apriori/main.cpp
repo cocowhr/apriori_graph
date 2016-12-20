@@ -1,11 +1,18 @@
+#include <WinSock2.h>  
+#include "mysql.h"  
+#pragma comment(lib,"wsock32.lib")  
+#pragma comment(lib,"libmysql.lib")   
+#pragma comment(lib,"wsock32.lib")  
+#pragma comment(lib,"libmysql.lib")  
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <bitset>
 #include <map>
 #include <list>
+#include <atlstr.h>
 using namespace std;
-#define ITEMNUM 10
+#define ITEMNUM 1280
 #define ITEMLEN 3
 class Data
 {
@@ -23,7 +30,7 @@ ostream& operator<<( ostream& os,const Data* data)
 }
 typedef struct
 {
-	vector<string> p;     //记录i项集的所有内容（比如1项集的内容，2项集的内容，或者3项集的内容等等）
+	vector<int*> p;     //记录i项集的所有内容（比如1项集的内容，2项集的内容，或者3项集的内容等等）
 	vector<double> sup;    //各个项集的支持计数（比如1项集中的每一条记录的支持度计数为多少，或者2项集中的每一条记录的支持度计数为多少等等）
 	int n;        //项集的数目（比如得到的1项集中有多少条记录，或者为2项集中有多少条记录，或者3项集中有多少条记录）
 } Large;
@@ -167,7 +174,10 @@ public:
 					double sup3=(double)(vi->tidlist&vj->tidlist).count()/ITEMNUM;
 					if(sup3>=sup2)
 					{
-						L2.p.push_back(int2str(vi->bv)+int2str(vj->bv));
+						int *temp=new int[2];
+						temp[0]=vi->bv;
+						temp[1]=vj->bv;
+						L2.p.push_back(temp);
 						L2.sup.push_back(sup3);
 						L2.n++;
 						insertArc(i-1, j-1, 0);
@@ -206,7 +216,8 @@ public:
 						{
 							int adj=p->adjvex;
 							bool beside=false;
-							ArcNode* pf=vertices[*itor++].firstarc;
+							ArcNode* pf=vertices[*itor].firstarc;
+							itor++;
 							while(pf)
 							{
 								if(pf->adjvex==adj)
@@ -235,7 +246,8 @@ public:
 							{
 								i++;
 								sup1=min(sup1,vertices[*itor].data);
-								sup2=max(sup2,minsupmap[vertices[*itor++].name]);
+								sup2=max(sup2,minsupmap[vertices[*itor].name]);
+								itor++;
 							}
 
 							if(sup1>=sup2)
@@ -244,7 +256,8 @@ public:
 								itor= s.begin();
 								while (itor != s.end())
 								{
-									bit=bit&vertices[*itor++].tidlist;
+									bit=bit&vertices[*itor].tidlist;
+									itor++;
 								}
 								double sup3=(double)bit.count()/ITEMNUM;
 								if(sup3>=sup2)
@@ -259,15 +272,18 @@ public:
 									{
 										cout<<"so wrong!!!"<<endl;
 									}
-									string point=(int2str(dataarray[p->adjvex]->bv));
+									int *temp=new int[i];
+									temp[0]=dataarray[p->adjvex]->bv;
 									Stack<int>::iterator itor= s.begin();
+									int j=1;
 									while (itor != s.end())
 									{
-										point+=int2str(vertices[*itor].name);
+										temp[j]=vertices[*itor].name;
+										j++;
 										itor++;
 									}
 									Lar[i-1].n++;
-									Lar[i-1].p.push_back(point);
+									Lar[i-1].p.push_back(temp);
 									Lar[i-1].sup.push_back(sup3);
 								}
 							}
@@ -420,41 +436,64 @@ void Rules(vector<Large> &L,int l[ITEMNUM][ITEMLEN] )
 			}
 			for(int h=1; h<n-1; h++)      //对总数为(2^i)-2个子集进行操作
 			{
-				string temp1;//申请一维整形数组temp1，存放关联规则前件；整形变量tp1记录关联规则前件包含的项数
-				string temp2;//申请一维整形数组temp2，存放关联规则后件；整形变量tp2记录关联规则后件包含的项数
+				int* temp1=new int[ITEMLEN];//申请一维整形数组temp1，存放关联规则前件；整形变量tp1记录关联规则前件包含的项数
+				int* temp2=new int[ITEMLEN];//申请一维整形数组temp2，存放关联规则后件；整形变量tp2记录关联规则后件包含的项数
 				tp1=0;
 				tp2=0;
 				int t=1;
+				double counts=0;
 				for(int m=0; m<i; m++)
 				{
 					string tt;
 					if((h/t)%2==1)
 					{
 						//						temp1[tp1++]=*(*((*(L+i)).p+j)+m);
-						tt=temp1;
-						temp1=((L[i-1].p)[j])[m]+tt;
+						//tt=temp1;
+						temp1[tp1++]=((L[i-1].p)[j])[m];
 					}
 					else
 					{
 						//						temp2[tp2++]=*(*((*(L+i)).p+j)+m);
-						tt=temp2;
-						temp2=((L[i-1].p)[j])[m]+tt;
+						temp2[tp2++]=((L[i-1].p)[j])[m];
 					}
 					t*=2;
 				}
+				for(int jj=0;jj<L[tp1-1].n;jj++)
+				{	
+					bool eq=true;
+					for(int k=0;k<=tp1-1;k++)
+					{
+						//cout<<L[tp1-1].p[jj][k]<<" ";
+						if(L[tp1-1].p[jj][k]!=temp1[tp1-1-k])
+						{
+							eq=false;
+							break;
+						}
+					}
+					if(eq)
+					{
+						counts=L[tp1-1].sup[jj]*ITEMNUM;
+					}
+				}
 				//                cout<<temp1<<endl;
-				int len=temp1.length();
-				vector<string>::iterator itit1=find(L[len-1].p.begin(),L[len-1].p.end(),temp1);               //统计关联规则前件在数据库事务中出现的次数
-				//                cout<<itit1-L[len-1].p.begin()<<"下标"<<endl;
-				double counts=L[len-1].sup[itit1-L[len-1].p.begin()]*ITEMNUM;
-				//                cout<<counts<<"   count"<<endl;
+				//int len=temp1.length();
+				//vector<string>::iterator itit1=find(L[len-1].p.begin(),L[len-1].p.end(),temp1);               //统计关联规则前件在数据库事务中出现的次数
+				////                cout<<itit1-L[len-1].p.begin()<<"下标"<<endl;
+				
+				               // cout<<counts<<"   count"<<endl;
 				if((double)(L[i-1].sup[j]*ITEMNUM/counts>=0.01))//检查是否大于等于最小置信度阈值 0.2=min_conf
 				{
 					//if(temp2=="5"||temp2=="6"||temp2=="7")
 					//{
-					cout<<temp1<<' ';
+					for(int jj=0;jj<tp1;jj++)
+					{
+						cout<<temp1[jj]<<' ';
+					}	
 					cout<<"==>";
-					cout<<temp2<<' ';
+					for(int jj=0;jj<tp2;jj++)
+					{
+						cout<<temp2[jj]<<' ';
+					}	
 					cout<<"\t"<<"置信度="<<(double)(L[i-1].sup[j]*ITEMNUM/counts) *100<<"%"<<"\t"<<"\t"<<"支持度="<<(double)(L[i-1].sup[j]) *100<<"%"<<endl;
 					//}
 				}
@@ -466,8 +505,34 @@ void Rules(vector<Large> &L,int l[ITEMNUM][ITEMLEN] )
 int main()
 {
 	int items[ITEMNUM][ITEMLEN];
+	MYSQL mysql;  
+	MYSQL_RES *result;  
+	MYSQL_ROW row;  
+	int res;
+	mysql_init(&mysql);  
+	mysql_real_connect(&mysql, "localhost", "root", "root", "apriori", 3306, NULL, 0); 
+	CString strSQL;
+	strSQL.Format("SELECT * FROM seq");
+	res=mysql_query(&mysql, strSQL);
+	if (!res)
+	{
+		result = mysql_store_result(&mysql);
+		if (result)
+		{
+			while (row = mysql_fetch_row(result))//获取具体的数据
+			{
+				items[atoi(row[0])-1][0]=atoi(row[1]);
+				items[atoi(row[0])-1][1]=atoi(row[2]);
+				items[atoi(row[0])-1][2]=atoi(row[3]);
+			}
+		}
+	}
+	else
+	{
+		cout << "query sql failed!" << endl;
+	}
 	//1 8-18 2 18-8 3 guohy 4lvtx 5xz 6outlook 7 liulan
-	items[0][0]=1;
+	/*items[0][0]=1;
 	items[0][1]=3;
 	items[0][2]=5;
 	items[1][0]=2;
@@ -496,7 +561,7 @@ int main()
 	items[8][2]=5;
 	items[9][0]=1;
 	items[9][1]=4;
-	items[9][2]=7;
+	items[9][2]=7;*/
 	map<int,int>itemmap;
 	int id=1;
 	for(int i=1; i<=ITEMNUM; i++)
@@ -534,13 +599,15 @@ int main()
 	}
 	sort(dataarray.begin(),dataarray.end(),Comp);
 	map<int,double>minsupmap;
-	minsupmap[1]=0.2;
-	minsupmap[2]=0.1;
-	minsupmap[3]=0.09;
-	minsupmap[4]=0.2;
-	minsupmap[5]=0.1;
-	minsupmap[6]=0.3;
-	minsupmap[7]=0.3;
+	for(int i=1;i<50;i++)
+		minsupmap[i]=0.1;
+	//minsupmap[1]=0.2;
+	//minsupmap[2]=0.1;
+	//minsupmap[3]=0.09;
+	//minsupmap[4]=0.2;
+	//minsupmap[5]=0.1;
+	//minsupmap[6]=0.3;
+	//minsupmap[7]=0.3;
 	vector<Data*>::iterator dataiter;
 	for(dataiter=dataarray.begin(); dataiter!=dataarray.end();)
 	{
@@ -557,12 +624,12 @@ int main()
 	vector<Large>Lar;
 	Large L1;
 	L1.n=dataarray.size();
-	int i=1;
 	for(dataiter=dataarray.begin(); dataiter!=dataarray.end(); dataiter++)
 	{
-		L1.p.push_back(int2str((*dataiter)->bv));
+		int *temp=new int[1];
+		temp[0]=(*dataiter)->bv;
+		L1.p.push_back(temp);
 		L1.sup.push_back((*dataiter)->sup);
-		i++;
 	}
 	Lar.push_back(L1);
 	Large L2;
@@ -570,12 +637,26 @@ int main()
 	ALGraph<int,double, bitset<ITEMNUM>,int> dgGraph(L1.n);
 	dgGraph.CreateDG(dataarray,minsupmap,L2);
 	Lar.push_back(L2);
+
 	while(!dgGraph.isempty())
 	{
+		//dgGraph.displayGraph();
 		dgGraph.DFSsearch(dataarray,minsupmap,Lar);
 		dgGraph.deleteVex();
 		dataarray.erase(dataarray.begin());
 	}
+	//for (int i=0;i<Lar.size();i++)
+	//{
+	//	cout<<"L"<<i+1<<endl;
+	//	for(int j=0;j<Lar[i].n;j++)
+	//	{	
+	//		for(int k=0;k<=i;k++)
+	//		{
+	//			cout<<Lar[i].p[j][k]<<" ";
+	//		}
+	//		cout<<endl;
+	//	}
+	//}
 	Rules(Lar,items);
 }
 
