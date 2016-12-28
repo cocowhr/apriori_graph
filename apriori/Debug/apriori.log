@@ -11,7 +11,7 @@ e:\c\apriori\apriori\main.cpp(271): warning C4018: “<”: 有符号/无符号�
               _Ty=Data *,
               _Kty=int
           ]
-          e:\c\apriori\apriori\main.cpp(644): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
+          e:\c\apriori\apriori\main.cpp(616): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
           with
           [
               VertexType=int,
@@ -21,7 +21,7 @@ e:\c\apriori\apriori\main.cpp(271): warning C4018: “<”: 有符号/无符号�
               _Ty=Data *,
               _Kty=int
           ]
-          e:\c\apriori\apriori\main.cpp(637): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
+          e:\c\apriori\apriori\main.cpp(609): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
           with
           [
               VertexType=int,

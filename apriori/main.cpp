@@ -504,7 +504,8 @@ void Rules(vector<Large> &L )
 
 int main()
 {
-	int items[ITEMNUM][ITEMLEN];
+	vector<Data*> dataarray;
+	int num=0;
 	MYSQL mysql;  
 	MYSQL_RES *result;  
 	MYSQL_ROW row;  
@@ -512,8 +513,29 @@ int main()
 	mysql_init(&mysql);  
 	mysql_real_connect(&mysql, "localhost", "root", "root", "apriori", 3306, NULL, 0); 
 	CString strSQL;
-	strSQL.Format("SELECT * FROM seq");
+	strSQL.Format("SELECT count(*) FROM apriori.count where sum/(select count(*) from apriori.seq)>0.1;");
 	res=mysql_query(&mysql, strSQL);
+	if (!res)
+	{
+		result = mysql_store_result(&mysql);
+		if (result)
+		{
+			row=mysql_fetch_row(result);
+			num=atoi(row[0]);
+		}
+	}
+	else
+	{
+		cout << "query sql failed!" << endl;
+	}
+	Data **d=new Data*[num];
+	for(int i=1; i<=num; i++)
+	{
+		d[i-1]=new Data();
+	}
+	strSQL.Format("SELECT pid FROM apriori.count where sum/(select count(*) from apriori.seq)>0.1 order by sum desc;");
+	res=mysql_query(&mysql, strSQL);
+	int i=0;
 	if (!res)
 	{
 		result = mysql_store_result(&mysql);
@@ -521,9 +543,7 @@ int main()
 		{
 			while (row = mysql_fetch_row(result))//获取具体的数据
 			{
-				items[atoi(row[0])-1][0]=atoi(row[1]);
-				items[atoi(row[0])-1][1]=atoi(row[2]);
-				items[atoi(row[0])-1][2]=atoi(row[3]);
+				d[i++]->bv=atoi(row[0]);
 			}
 		}
 	}
@@ -531,73 +551,37 @@ int main()
 	{
 		cout << "query sql failed!" << endl;
 	}
-	//1 8-18 2 18-8 3 guohy 4lvtx 5xz 6outlook 7 liulan
-	/*items[0][0]=1;
-	items[0][1]=3;
-	items[0][2]=5;
-	items[1][0]=2;
-	items[1][1]=4;
-	items[1][2]=5;
-	items[2][0]=1;
-	items[2][1]=4;
-	items[2][2]=6;
-	items[3][0]=2;
-	items[3][1]=3;
-	items[3][2]=5;
-	items[4][0]=1;
-	items[4][1]=3;
-	items[4][2]=7;
-	items[5][0]=1;
-	items[5][1]=4;
-	items[5][2]=7;
-	items[6][0]=2;
-	items[6][1]=3;
-	items[6][2]=7;
-	items[7][0]=1;
-	items[7][1]=4;
-	items[7][2]=5;
-	items[8][0]=2;
-	items[8][1]=4;
-	items[8][2]=5;
-	items[9][0]=1;
-	items[9][1]=4;
-	items[9][2]=7;*/
-	map<int,int>itemmap;
-	int id=1;
-	for(int i=1; i<=ITEMNUM; i++)
+	for(int i=1; i<=num; i++)
 	{
-		for(int j=1; j<=ITEMLEN; j++)
+		/*initData(d[i-1],items);*/
+		double count=0;
+		strSQL.Format("SELECT id FROM apriori.seq where protocol=%d or process=%d or url=%d;",d[i-1]->bv,d[i-1]->bv,d[i-1]->bv);
+		res=mysql_query(&mysql, strSQL);
+		if (!res)
 		{
-			int word=items[i-1][j-1];
-			map<int,int>::iterator it;
-			it=itemmap.find(word);
-			if(it==itemmap.end())
+			result = mysql_store_result(&mysql);
+			if (result)
 			{
-				itemmap[word]=id;
-				id++;
+				while (row = mysql_fetch_row(result))//获取具体的数据
+				{
+					d[i-1]->tidlist[ITEMNUM-atoi(row[0])]=1;//最高位为第一个items
+					count++;
+				}
+				d[i-1]->sup=count/ITEMNUM;
 			}
 		}
-	}
-	int num=itemmap.size();
-	vector<Data*> dataarray;
-	Data **d=new Data*[num];
-	for(int i=1; i<=num; i++)
-	{
-		d[i-1]=new Data();
-	}
-	map<int,int>::iterator iter;
-	for( iter=itemmap.begin(); iter!=itemmap.end(); iter++)
-	{
-		int a= iter->first;
-		int p = iter->second;
-		d[p-1]->bv=a;
-	}
-	for(int i=1; i<=num; i++)
-	{
-		initData(d[i-1],items);
+		else
+		{
+			cout << "query sql failed!" << endl;
+		}
 		dataarray.push_back(d[i-1]);
 	}
-	sort(dataarray.begin(),dataarray.end(),Comp);
+	//for(int i=0;i<num;i++)
+	//{
+	//	cout<<d[i]->bv<<endl;
+	//	cout<<d[i]->sup<<endl;
+	//	cout<<d[i]->tidlist<<endl;
+	//}
 	map<int,double>minsupmap;
 	for(int i=1;i<50;i++)
 		minsupmap[i]=0.1;
@@ -609,18 +593,6 @@ int main()
 	//minsupmap[6]=0.3;
 	//minsupmap[7]=0.3;
 	vector<Data*>::iterator dataiter;
-	for(dataiter=dataarray.begin(); dataiter!=dataarray.end();)
-	{
-
-		if((*dataiter)->sup<minsupmap[(*dataiter)->bv])
-		{
-			dataiter=dataarray.erase(dataiter);    //删除元素，返回值指向已删除元素的下一个位置
-		}
-		else
-		{
-			++dataiter;    //指向下一个位置
-		}
-	}
 	vector<Large>Lar;
 	Large L1;
 	L1.n=dataarray.size();
@@ -645,18 +617,18 @@ int main()
 		dgGraph.deleteVex();
 		dataarray.erase(dataarray.begin());
 	}
-	//for (int i=0;i<Lar.size();i++)
-	//{
-	//	cout<<"L"<<i+1<<endl;
-	//	for(int j=0;j<Lar[i].n;j++)
-	//	{	
-	//		for(int k=0;k<=i;k++)
-	//		{
-	//			cout<<Lar[i].p[j][k]<<" ";
-	//		}
-	//		cout<<endl;
-	//	}
-	//}
+	////for (int i=0;i<Lar.size();i++)
+	////{
+	////	cout<<"L"<<i+1<<endl;
+	////	for(int j=0;j<Lar[i].n;j++)
+	////	{	
+	////		for(int k=0;k<=i;k++)
+	////		{
+	////			cout<<Lar[i].p[j][k]<<" ";
+	////		}
+	////		cout<<endl;
+	////	}
+	////}
 	Rules(Lar);
 }
 
