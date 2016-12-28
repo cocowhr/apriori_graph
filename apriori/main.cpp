@@ -418,7 +418,7 @@ public:
 };
 /*置信度*/
 
-void Rules(vector<Large> &L,int l[ITEMNUM][ITEMLEN] )
+void Rules(vector<Large> &L )
 {
 	int lk=L.size();//lk为频繁项目集层数
 	int tp1,tp2;
@@ -657,7 +657,7 @@ int main()
 	//		cout<<endl;
 	//	}
 	//}
-	Rules(Lar,items);
+	Rules(Lar);
 }
 
 
