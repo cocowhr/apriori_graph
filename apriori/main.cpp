@@ -12,8 +12,15 @@
 #include <list>
 #include <atlstr.h>
 using namespace std;
-#define ITEMNUM 1280
-#define ITEMLEN 3
+#define ITEMNUM 1286
+#define ITEMLEN 4
+/***mysql变量***/
+MYSQL mysql;  
+MYSQL_RES *result;  
+MYSQL_ROW row;  
+CString strSQL;
+int res;
+
 class Data
 {
 	friend ostream &operator<<(ostream &output, const Data* data);
@@ -60,22 +67,6 @@ string int2str(int n) {
 		ret="0";
 	}
 	return ret;
-}
-void initData(Data *d,int items[ITEMNUM][ITEMLEN])
-{
-	double count=0;
-	for(int j=1; j<=ITEMNUM; j++)
-	{
-		for(int k=1;k<=ITEMLEN;k++)
-		{
-			if(items[j-1][k-1]==d->bv)
-			{
-				count++;
-				d->tidlist[ITEMNUM-j]=1;//最高位为第一个items
-			}
-		}
-	}
-	d->sup=count/ITEMNUM;
 }
 bool Comp(Data* first,Data* second)
 {
@@ -132,6 +123,29 @@ template<typename VertexType,typename VertexType2,typename VertexType3, typename
 class ALGraph
 {
 public:
+	static const int MAX_VERTEX_NUM = 20;  //最大顶点个数
+
+
+	struct ArcNode          //表结点
+	{
+		int adjvex;        //该弧所指向的顶点的位置
+		ArcNode *nextarc;  //指向下一条弧的指针
+		InfoType info;     //该弧相关信息的指针
+	};
+	struct VNode           //头结点
+	{
+		VertexType name;    //顶点英文字母
+		VertexType2 data;    //顶点支持度
+		VertexType3 tidlist; //tidlist
+		ArcNode *firstarc;  //指向第一条依附于该顶点的弧的指针
+	};
+
+	/*VNode AdjList[MAX_VERTEX_NUM];*/
+	/* AdjList[MAX_VERTEX_NUM] vertices;*/
+	VNode vertices[MAX_VERTEX_NUM];
+	int vexnum;             //图的当前顶点数
+	int arcnum;             //图的弧数
+
 	ALGraph(int verNum)
 		: vexnum(verNum), arcnum(0)
 	{
@@ -191,6 +205,111 @@ public:
 	{
 		return 0==vexnum;
 	}
+	//void DFSmain(vector<Data*> &dataarray, map<int,double>&minsupmap,vector<Large> &Lar)
+	//{
+	//	ArcNode* p;
+	//	visited[0] = 1;
+	//	s.push(0);
+	//	p=vertices[0].firstarc;
+	//	while(p)
+	//	{
+	//		if(!visited[p->adjvex])
+	//		{
+	//			s.push(p->adjvex);
+	//			VNode vj=vertices[p->adjvex];
+	//		}
+	//		else
+	//		{p=p->nextarc;}
+	//	}
+	//}
+	//void DFS(VNode vj,vector<Data*> &dataarray, map<int,double>&minsupmap,vector<Large> &Lar)
+	//{
+	//	ArcNode* p=vj.firstarc;
+	//	if(p)
+	//	{
+	//		Stack<int>::iterator ii= s.begin();						
+	//		bool allbeside=true;
+	//		Stack<int>::iterator itor= s.begin();
+	//		while (itor != s.end())
+	//		{
+	//			int adj=p->adjvex;
+	//			bool beside=false;
+	//			ArcNode* pf=vertices[*itor].firstarc;
+	//			itor++;
+	//			while(pf)
+	//			{
+	//				if(pf->adjvex==adj)
+	//				{
+	//					beside=true;
+	//					break;
+	//				}
+	//				else
+	//				{
+	//					pf=pf->nextarc;
+	//				}
+	//			}
+	//			if(!beside)
+	//			{
+	//				allbeside=false;
+	//				break;
+	//			}
+	//		}
+	//		if(allbeside)//Vk(p->adjvex)是否是其所有的祖先结点的邻接点
+	//		{
+	//			int i=1;//频繁集层数
+	//			double sup1=dataarray[p->adjvex]->sup;
+	//			double sup2=minsupmap[dataarray[p->adjvex]->bv];
+	//			Stack<int>::iterator itor= s.begin();	
+	//			while (itor != s.end())
+	//			{
+	//				i++;
+	//				sup1=min(sup1,vertices[*itor].data);
+	//				sup2=max(sup2,minsupmap[vertices[*itor].name]);
+	//				itor++;
+	//			}
+
+	//			if(sup1>=sup2)
+	//			{
+	//				bitset<ITEMNUM> bit=dataarray[p->adjvex]->tidlist;
+	//				itor= s.begin();
+	//				while (itor != s.end())
+	//				{
+	//					bit=bit&vertices[*itor].tidlist;
+	//					itor++;
+	//				}
+	//				double sup3=(double)bit.count()/ITEMNUM;
+	//				if(sup3>=sup2)
+	//				{
+	//					if(Lar.size()==i-1)
+	//					{
+	//						Large Li;
+	//						Li.n=0;
+	//						Lar.push_back(Li);
+	//					}
+	//					else if(Lar.size()<i-1)
+	//					{
+	//						cout<<"so wrong!!!"<<endl;
+	//					}
+	//					int *temp=new int[i];
+	//					Stack<int>::iterator itor= s.begin();
+	//					int j=1;
+	//					while (itor != s.end())
+	//					{
+	//						temp[j]=vertices[*itor].name;
+	//						j++;
+	//						itor++;
+	//					}
+	//					Lar[i-1].n++;
+	//					Lar[i-1].p.push_back(temp);
+	//					Lar[i-1].sup.push_back(sup3);
+	//				}
+	//			}
+	//			s.push(p->adjvex);
+	//		}
+	//	}
+	//	else
+	//	{p=p->nextarc;}
+	//}
 	void DFSsearch(vector<Data*> &dataarray, map<int,double>&minsupmap,vector<Large> &Lar)
 	{
 		//深度优先搜索非递归算法
@@ -274,6 +393,10 @@ public:
 									}
 									int *temp=new int[i];
 									temp[0]=dataarray[p->adjvex]->bv;
+									if(temp[0]==19)
+									{
+										cout<<"a";
+									}
 									Stack<int>::iterator itor= s.begin();
 									int j=1;
 									while (itor != s.end())
@@ -355,7 +478,7 @@ public:
 			}
 		}
 	}
-	private:
+private:
 	//初始化邻接链表的表头数组
 	void InitVertics( vector<Data*> &dataarray)
 	{
@@ -392,28 +515,6 @@ public:
 	}
 
 	//const数据成员必须在构造函数里初始化
-	static const int MAX_VERTEX_NUM = 20;  //最大顶点个数
-
-
-	struct ArcNode          //表结点
-	{
-		int adjvex;        //该弧所指向的顶点的位置
-		ArcNode *nextarc;  //指向下一条弧的指针
-		InfoType info;     //该弧相关信息的指针
-	};
-	struct VNode           //头结点
-	{
-		VertexType name;    //顶点英文字母
-		VertexType2 data;    //顶点支持度
-		VertexType3 tidlist; //tidlist
-		ArcNode *firstarc;  //指向第一条依附于该顶点的弧的指针
-	};
-
-	/*VNode AdjList[MAX_VERTEX_NUM];*/
-	/* AdjList[MAX_VERTEX_NUM] vertices;*/
-	VNode vertices[MAX_VERTEX_NUM];
-	int vexnum;             //图的当前顶点数
-	int arcnum;             //图的弧数
 
 };
 /*置信度*/
@@ -425,7 +526,6 @@ void Rules(vector<Large> &L )
 
 	for(int i=2; i<=lk; i++)              //依次对每个频繁项目集推导关联规则
 	{
-
 		cout<<"L"<<i<<':'<<endl;
 		for(int j=0; j<L[i-1].n; j++)   //对当前频繁项目集的每一条记录进行推导
 		{
@@ -458,13 +558,20 @@ void Rules(vector<Large> &L )
 					}
 					t*=2;
 				}
+				/*		if(tp1==3)
+				{
+				for(int io=0;io<tp1;io++)
+				{
+				cout<<temp1[io]<<endl;
+				}
+				}*/
 				for(int jj=0;jj<L[tp1-1].n;jj++)
 				{	
 					bool eq=true;
 					for(int k=0;k<=tp1-1;k++)
 					{
-						//cout<<L[tp1-1].p[jj][k]<<" ";
-						if(L[tp1-1].p[jj][k]!=temp1[tp1-1-k])
+						/*cout<<L[tp1-1].p[jj][k]<<" "<<temp1[k]<<endl;*/
+						if(L[tp1-1].p[jj][k]!=temp1[k])
 						{
 							eq=false;
 							break;
@@ -479,12 +586,10 @@ void Rules(vector<Large> &L )
 				//int len=temp1.length();
 				//vector<string>::iterator itit1=find(L[len-1].p.begin(),L[len-1].p.end(),temp1);               //统计关联规则前件在数据库事务中出现的次数
 				////                cout<<itit1-L[len-1].p.begin()<<"下标"<<endl;
-				
-				               // cout<<counts<<"   count"<<endl;
-				if((double)(L[i-1].sup[j]*ITEMNUM/counts>=0.01))//检查是否大于等于最小置信度阈值 0.2=min_conf
+
+				// cout<<counts<<"   count"<<endl;
+				if((double)(L[i-1].sup[j]*ITEMNUM/counts>=0.04))//检查是否大于等于最小置信度阈值 0.4=min_conf
 				{
-					//if(temp2=="5"||temp2=="6"||temp2=="7")
-					//{
 					for(int jj=0;jj<tp1;jj++)
 					{
 						cout<<temp1[jj]<<' ';
@@ -495,7 +600,44 @@ void Rules(vector<Large> &L )
 						cout<<temp2[jj]<<' ';
 					}	
 					cout<<"\t"<<"置信度="<<(double)(L[i-1].sup[j]*ITEMNUM/counts) *100<<"%"<<"\t"<<"\t"<<"支持度="<<(double)(L[i-1].sup[j]) *100<<"%"<<endl;
-					//}
+					switch (tp1)
+					{
+					case 1:
+						switch(tp2)
+						{
+						case 1:
+							strSQL.Format("INSERT INTO `apriori`.`rules` (`firstseq1`, `lastseq1`, `support`, `confidence`)VALUES ('%d', '%d', '%f', '%f');",temp1[0],temp2[0],L[i-1].sup[j],L[i-1].sup[j]*ITEMNUM/counts);
+							res=mysql_query(&mysql, strSQL);
+							break;
+						case 2:
+							strSQL.Format("INSERT INTO `apriori`.`rules` (`firstseq1`, `lastseq1`, `lastseq2`, `support`, `confidence`) VALUES ('%d', '%d','%d', '%f', '%f');",temp1[0],temp2[0],temp2[1],L[i-1].sup[j],L[i-1].sup[j]*ITEMNUM/counts);
+							mysql_query(&mysql, strSQL);
+							break;
+						case 3:
+							strSQL.Format("INSERT INTO `apriori`.`rules` (`firstseq1`, `lastseq1`, `lastseq2`,`lastseq3`, `support`, `confidence`) VALUES ('%d', '%d','%d','%d', '%f', '%f');",temp1[0],temp2[0],temp2[1],temp2[2],L[i-1].sup[j],L[i-1].sup[j]*ITEMNUM/counts);
+							mysql_query(&mysql, strSQL);
+							break;
+						}
+						break;
+					case 2:
+						switch(tp2)
+						{
+						case 1:
+							strSQL.Format("INSERT INTO `apriori`.`rules`  (`firstseq1`, `firstseq2`, `lastseq1`, `support`, `confidence`)VALUES ('%d', '%d','%d', '%f', '%f');",temp1[0],temp1[1],temp2[0],L[i-1].sup[j],L[i-1].sup[j]*ITEMNUM/counts);
+							mysql_query(&mysql, strSQL);
+							break;
+						case 2:
+							strSQL.Format("INSERT INTO `apriori`.`rules`  (`firstseq1`, `firstseq2`, `lastseq1`, `lastseq2`, `support`, `confidence`) VALUES ('%d','%d', '%d','%d', '%f', '%f');",temp1[0],temp1[1],temp2[0],temp2[1],L[i-1].sup[j],L[i-1].sup[j]*ITEMNUM/counts);
+							mysql_query(&mysql, strSQL);
+							break;
+						}
+						break;
+					case 3:
+						strSQL.Format("INSERT INTO `apriori`.`rules`  (`firstseq1`, `firstseq2`, `firstseq3`, `lastseq1`, `support`, `confidence`)VALUES ('%d', '%d','%d','%d', '%f', '%f');",temp1[0],temp1[1],temp1[2],temp2[0],L[i-1].sup[j],L[i-1].sup[j]*ITEMNUM/counts);
+						mysql_query(&mysql, strSQL);
+						break;
+					}
+
 				}
 			}
 		}
@@ -506,14 +648,9 @@ int main()
 {
 	vector<Data*> dataarray;
 	int num=0;
-	MYSQL mysql;  
-	MYSQL_RES *result;  
-	MYSQL_ROW row;  
-	int res;
 	mysql_init(&mysql);  
 	mysql_real_connect(&mysql, "localhost", "root", "root", "apriori", 3306, NULL, 0); 
-	CString strSQL;
-	strSQL.Format("SELECT count(*) FROM apriori.count where sum/(select count(*) from apriori.seq)>0.1;");
+	strSQL.Format("SELECT count(*) FROM apriori.count where sum/(select count(*) from apriori.seq)>0.1;");//直接将第一层筛选交给数据库
 	res=mysql_query(&mysql, strSQL);
 	if (!res)
 	{
@@ -555,7 +692,7 @@ int main()
 	{
 		/*initData(d[i-1],items);*/
 		double count=0;
-		strSQL.Format("SELECT id FROM apriori.seq where protocol=%d or process=%d or url=%d;",d[i-1]->bv,d[i-1]->bv,d[i-1]->bv);
+		strSQL.Format("SELECT id FROM apriori.seq where protocol=%d or process=%d or url=%d or time=%d;",d[i-1]->bv,d[i-1]->bv,d[i-1]->bv,d[i-1]->bv);//填充tidlist
 		res=mysql_query(&mysql, strSQL);
 		if (!res)
 		{
@@ -576,22 +713,9 @@ int main()
 		}
 		dataarray.push_back(d[i-1]);
 	}
-	//for(int i=0;i<num;i++)
-	//{
-	//	cout<<d[i]->bv<<endl;
-	//	cout<<d[i]->sup<<endl;
-	//	cout<<d[i]->tidlist<<endl;
-	//}
 	map<int,double>minsupmap;
 	for(int i=1;i<50;i++)
 		minsupmap[i]=0.1;
-	//minsupmap[1]=0.2;
-	//minsupmap[2]=0.1;
-	//minsupmap[3]=0.09;
-	//minsupmap[4]=0.2;
-	//minsupmap[5]=0.1;
-	//minsupmap[6]=0.3;
-	//minsupmap[7]=0.3;
 	vector<Data*>::iterator dataiter;
 	vector<Large>Lar;
 	Large L1;
@@ -612,23 +736,24 @@ int main()
 
 	while(!dgGraph.isempty())
 	{
-		//dgGraph.displayGraph();
+		dgGraph.displayGraph();
 		dgGraph.DFSsearch(dataarray,minsupmap,Lar);
 		dgGraph.deleteVex();
 		dataarray.erase(dataarray.begin());
 	}
-	////for (int i=0;i<Lar.size();i++)
-	////{
-	////	cout<<"L"<<i+1<<endl;
-	////	for(int j=0;j<Lar[i].n;j++)
-	////	{	
-	////		for(int k=0;k<=i;k++)
-	////		{
-	////			cout<<Lar[i].p[j][k]<<" ";
-	////		}
-	////		cout<<endl;
-	////	}
-	////}
+	for (int i=0;i<Lar.size();i++)
+	{
+		cout<<"L"<<i+1<<endl;
+		for(int j=0;j<Lar[i].n;j++)
+		{	
+			for(int k=0;k<=i;k++)
+			{
+				cout<<Lar[i].p[j][k]<<" ";
+			}
+			cout<<endl;
+			cout<<Lar[i].sup[j]<<endl;
+		}
+	}
 	Rules(Lar);
 }
 

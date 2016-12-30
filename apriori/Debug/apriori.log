@@ -1,32 +1,44 @@
-﻿  main.cpp
-e:\c\apriori\apriori\main.cpp(39): warning C4018: “<=”: 有符号/无符号不匹配
-e:\c\apriori\apriori\main.cpp(271): warning C4018: “<”: 有符号/无符号不匹配
-          e:\c\apriori\apriori\main.cpp(195): 编译类 模板 成员函数“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”时
-          with
-          [
-              VertexType=int,
-              VertexType2=double,
-              VertexType3=std::bitset<1280>,
-              InfoType=int,
-              _Ty=Data *,
-              _Kty=int
-          ]
-          e:\c\apriori\apriori\main.cpp(616): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
-          with
-          [
-              VertexType=int,
-              VertexType2=double,
-              VertexType3=std::bitset<1280>,
-              InfoType=int,
-              _Ty=Data *,
-              _Kty=int
-          ]
-          e:\c\apriori\apriori\main.cpp(609): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
-          with
-          [
-              VertexType=int,
-              VertexType2=double,
-              VertexType3=std::bitset<1280>,
-              InfoType=int
-          ]
-  apriori.vcxproj -> E:\C\apriori\Debug\apriori.exe
+﻿生成启动时间为 2016-12-31 2:43:12。
+     1>项目“E:\C\apriori\apriori\apriori.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         E:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+     1>e:\c\apriori\apriori\main.cpp(46): warning C4018: “<=”: 有符号/无符号不匹配
+     1>e:\c\apriori\apriori\main.cpp(744): warning C4018: “<”: 有符号/无符号不匹配
+     1>e:\c\apriori\apriori\main.cpp(389): warning C4018: “<”: 有符号/无符号不匹配
+                 e:\c\apriori\apriori\main.cpp(314): 编译类 模板 成员函数“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”时
+                 with
+                 [
+                     VertexType=int,
+                     VertexType2=double,
+                     VertexType3=std::bitset<1286>,
+                     InfoType=int,
+                     _Ty=Data *,
+                     _Kty=int
+                 ]
+                 e:\c\apriori\apriori\main.cpp(740): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
+                 with
+                 [
+                     VertexType=int,
+                     VertexType2=double,
+                     VertexType3=std::bitset<1286>,
+                     InfoType=int,
+                     _Ty=Data *,
+                     _Kty=int
+                 ]
+                 e:\c\apriori\apriori\main.cpp(733): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
+                 with
+                 [
+                     VertexType=int,
+                     VertexType2=double,
+                     VertexType3=std::bitset<1286>,
+                     InfoType=int
+                 ]
+       Link:
+         E:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\C\apriori\Debug\apriori.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\C\apriori\Debug\apriori.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\C\apriori\Debug\apriori.lib" /MACHINE:X86 Debug\main.obj
+         apriori.vcxproj -> E:\C\apriori\Debug\apriori.exe
+     1>已完成生成项目“E:\C\apriori\apriori\apriori.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.51
