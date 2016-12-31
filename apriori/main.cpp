@@ -209,141 +209,129 @@ public:
 	{
 		//深度优先搜索非递归算法
 		Stack <int>s;
+		Stack <ArcNode*>ps;//stack s push之后 将p也push到ps中保存信息 stack s pop之后 ps也pop
 		ArcNode* p;
-		int* visited=new int [vexnum+1]();
-		visited[0] = 1;
+		//int* visited=new int [vexnum+1]();
+		//visited[0] = 1;
 		s.push(0);
+		p=vertices[s.top()].firstarc;
 		while (!s.empty())
 		{
-			p=vertices[s.top()].firstarc;
 			while(p)
 			{
-				//p=p->nextarc;
-				if(!visited[p->adjvex])
+				if(s.size()>=2)
 				{
-					visited[p->adjvex]=1;
-					if(s.size()>=2)
+		/*			cout<<dataarray[p->adjvex]->bv<<endl;
+					Stack<int>::iterator ii= s.begin();		
+					while (ii != s.end())
 					{
-						cout<<dataarray[p->adjvex]->bv<<endl;
-						Stack<int>::iterator ii= s.begin();		
-						while (ii != s.end())
+						cout<<vertices[*ii].name<<endl;
+						ii++;
+					}
+					cout<<"************************"<<endl;*/
+					bool allbeside=true;
+					Stack<int>::iterator itor= s.begin();
+					while (itor != s.end())
+					{
+						int adj=p->adjvex;
+						bool beside=false;
+						ArcNode* pf=vertices[*itor].firstarc;
+						itor++;
+						while(pf)
 						{
-							cout<<vertices[*ii].name<<endl;
-							ii++;
-						}
-						cout<<"************************"<<endl;
-						bool allbeside=true;
-						Stack<int>::iterator itor= s.begin();
-						while (itor != s.end())
-						{
-							int adj=p->adjvex;
-							bool beside=false;
-							ArcNode* pf=vertices[*itor].firstarc;
-							itor++;
-							while(pf)
+							if(pf->adjvex==adj)
 							{
-								if(pf->adjvex==adj)
-								{
-									beside=true;
-									break;
-								}
-								else
-								{
-									pf=pf->nextarc;
-								}
-							}
-							if(!beside)
-							{
-								allbeside=false;
+								beside=true;
 								break;
 							}
+							else
+							{
+								pf=pf->nextarc;
+							}
 						}
-						if(allbeside)//Vk(p->adjvex)是否是其所有的祖先结点的邻接点
+						if(!beside)
 						{
-							int i=1;//频繁集层数
-							double sup1=dataarray[p->adjvex]->sup;
-							double sup2=minsupmap[dataarray[p->adjvex]->bv];
-							Stack<int>::iterator itor= s.begin();	
+							allbeside=false;
+							break;
+						}
+					}
+					if(allbeside)//Vk(p->adjvex)是否是其所有的祖先结点的邻接点
+					{
+						int i=1;//频繁集层数
+						double sup1=dataarray[p->adjvex]->sup;
+						double sup2=minsupmap[dataarray[p->adjvex]->bv];
+						Stack<int>::iterator itor= s.begin();	
+						while (itor != s.end())
+						{
+							i++;
+							sup1=min(sup1,vertices[*itor].data);
+							sup2=max(sup2,minsupmap[vertices[*itor].name]);
+							itor++;
+						}
+
+						if(sup1>=sup2)
+						{
+							bitset<ITEMNUM> bit=dataarray[p->adjvex]->tidlist;
+							itor= s.begin();
 							while (itor != s.end())
 							{
-								i++;
-								sup1=min(sup1,vertices[*itor].data);
-								sup2=max(sup2,minsupmap[vertices[*itor].name]);
+								bit=bit&vertices[*itor].tidlist;
 								itor++;
 							}
-
-							if(sup1>=sup2)
+							double sup3=(double)bit.count()/ITEMNUM;
+							if(sup3>=sup2)
 							{
-								bitset<ITEMNUM> bit=dataarray[p->adjvex]->tidlist;
-								itor= s.begin();
+								if(Lar.size()==i-1)
+								{
+									Large Li;
+									Li.n=0;
+									Lar.push_back(Li);
+								}
+								else if(Lar.size()<i-1)
+								{
+									cout<<"so wrong!!!"<<endl;
+								}
+								int *temp=new int[i];
+								temp[0]=dataarray[p->adjvex]->bv;
+								Stack<int>::iterator itor= s.begin();
+								int j=1;
 								while (itor != s.end())
 								{
-									bit=bit&vertices[*itor].tidlist;
+									temp[j]=vertices[*itor].name;
+									j++;
 									itor++;
 								}
-								double sup3=(double)bit.count()/ITEMNUM;
-								if(sup3>=sup2)
-								{
-									if(Lar.size()==i-1)
-									{
-										Large Li;
-										Li.n=0;
-										Lar.push_back(Li);
-									}
-									else if(Lar.size()<i-1)
-									{
-										cout<<"so wrong!!!"<<endl;
-									}
-									int *temp=new int[i];
-									temp[0]=dataarray[p->adjvex]->bv;
-									Stack<int>::iterator itor= s.begin();
-									int j=1;
-									while (itor != s.end())
-									{
-										temp[j]=vertices[*itor].name;
-										j++;
-										itor++;
-									}
-								/*	if(i==2)
-									{
-										cout<<"a";
-									}*/
-									Lar[i-1].n++;
-									Lar[i-1].p.push_back(temp);
-									Lar[i-1].sup.push_back(sup3);
-									s.push(p->adjvex);
-									for(p=vertices[s.top()].firstarc;p!=NULL;p=p->nextarc)
-									{
-										visited[p->adjvex]=0;
-									}
-									p=vertices[s.top()].firstarc;
-								}
-								else
-									p=p->nextarc;
+								Lar[i-1].n++;
+								Lar[i-1].p.push_back(temp);
+								Lar[i-1].sup.push_back(sup3);
+								s.push(p->adjvex);
+								ps.push(p);
+								p=vertices[s.top()].firstarc;
 							}
 							else
-								p=p->nextarc;	
+								p=p->nextarc;
 						}
 						else
-							p=p->nextarc;
+							p=p->nextarc;	
 					}
 					else
-					{
-						s.push(p->adjvex);
-						for(p=vertices[s.top()].firstarc;p!=NULL;p=p->nextarc)
-						{
-							visited[p->adjvex]=0;
-						}
-						p=vertices[s.top()].firstarc;
-					}
-					//break;
+						p=p->nextarc;
 				}
 				else
-					p=p->nextarc;
+				{
+					s.push(p->adjvex);
+					ps.push(p);
+					p=vertices[s.top()].firstarc;
+				}
 			}
 			if (p == NULL)
 			{
 				s.pop();
+				if(!ps.empty())//s最后会比ps多一个
+				{
+					p=ps.top()->nextarc;
+					ps.pop();
+				}
 			}
 		}
 
@@ -652,7 +640,7 @@ int main()
 	ALGraph<int,double, bitset<ITEMNUM>,int> dgGraph(L1.n);
 	dgGraph.CreateDG(dataarray,minsupmap,L2);
 	Lar.push_back(L2);
-	dgGraph.displayGraph();
+	//dgGraph.displayGraph();
 	while(!dgGraph.isempty())
 	{
 		/*dgGraph.displayGraph();*/
@@ -660,7 +648,7 @@ int main()
 		dgGraph.deleteVex();
 		dataarray.erase(dataarray.begin());
 	}
-	for (int i=0;i<Lar.size();i++)
+	/*for (int i=0;i<Lar.size();i++)
 	{
 		cout<<"L"<<i+1<<endl;
 		for(int j=0;j<Lar[i].n;j++)
@@ -672,6 +660,6 @@ int main()
 			cout<<endl;
 			cout<<Lar[i].sup[j]<<endl;
 		}
-	}
-	//Rules(Lar);
+	}*/
+	Rules(Lar);
 }

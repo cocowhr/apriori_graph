@@ -1,11 +1,10 @@
-﻿生成启动时间为 2016-12-31 20:19:12。
+﻿生成启动时间为 2016-12-31 20:42:11。
      1>项目“E:\C\apriori\apriori\apriori.vcxproj”在节点 2 上(Build 个目标)。
      1>ClCompile:
          E:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
      1>e:\c\apriori\apriori\main.cpp(46): warning C4018: “<=”: 有符号/无符号不匹配
-     1>e:\c\apriori\apriori\main.cpp(663): warning C4018: “<”: 有符号/无符号不匹配
-     1>e:\c\apriori\apriori\main.cpp(293): warning C4018: “<”: 有符号/无符号不匹配
+     1>e:\c\apriori\apriori\main.cpp(290): warning C4018: “<”: 有符号/无符号不匹配
                  e:\c\apriori\apriori\main.cpp(209): 编译类 模板 成员函数“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”时
                  with
                  [
@@ -16,7 +15,7 @@
                      _Ty=Data *,
                      _Kty=int
                  ]
-                 e:\c\apriori\apriori\main.cpp(659): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
+                 e:\c\apriori\apriori\main.cpp(647): 参见对正在编译的函数 模板 实例化“void ALGraph<VertexType,VertexType2,VertexType3,InfoType>::DFSsearch(std::vector<_Ty> &,std::map<_Kty,double> &,std::vector<Large> &)”的引用
                  with
                  [
                      VertexType=int,
@@ -26,7 +25,7 @@
                      _Ty=Data *,
                      _Kty=int
                  ]
-                 e:\c\apriori\apriori\main.cpp(652): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
+                 e:\c\apriori\apriori\main.cpp(640): 参见对正在编译的类 模板 实例化“ALGraph<VertexType,VertexType2,VertexType3,InfoType>”的引用
                  with
                  [
                      VertexType=int,
@@ -41,4 +40,4 @@
 
 生成成功。
 
-已用时间 00:00:02.71
+已用时间 00:00:02.46
