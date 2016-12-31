@@ -12,7 +12,7 @@
 #include <list>
 #include <atlstr.h>
 using namespace std;
-#define ITEMNUM 1286
+#define ITEMNUM 1285
 #define ITEMLEN 4
 /***mysql变量***/
 MYSQL mysql;  
@@ -189,8 +189,8 @@ public:
 					if(sup3>=sup2)
 					{
 						int *temp=new int[2];
-						temp[0]=vi->bv;
-						temp[1]=vj->bv;
+						temp[0]=vj->bv;
+						temp[1]=vi->bv;
 						L2.p.push_back(temp);
 						L2.sup.push_back(sup3);
 						L2.n++;
@@ -205,111 +205,6 @@ public:
 	{
 		return 0==vexnum;
 	}
-	//void DFSmain(vector<Data*> &dataarray, map<int,double>&minsupmap,vector<Large> &Lar)
-	//{
-	//	ArcNode* p;
-	//	visited[0] = 1;
-	//	s.push(0);
-	//	p=vertices[0].firstarc;
-	//	while(p)
-	//	{
-	//		if(!visited[p->adjvex])
-	//		{
-	//			s.push(p->adjvex);
-	//			VNode vj=vertices[p->adjvex];
-	//		}
-	//		else
-	//		{p=p->nextarc;}
-	//	}
-	//}
-	//void DFS(VNode vj,vector<Data*> &dataarray, map<int,double>&minsupmap,vector<Large> &Lar)
-	//{
-	//	ArcNode* p=vj.firstarc;
-	//	if(p)
-	//	{
-	//		Stack<int>::iterator ii= s.begin();						
-	//		bool allbeside=true;
-	//		Stack<int>::iterator itor= s.begin();
-	//		while (itor != s.end())
-	//		{
-	//			int adj=p->adjvex;
-	//			bool beside=false;
-	//			ArcNode* pf=vertices[*itor].firstarc;
-	//			itor++;
-	//			while(pf)
-	//			{
-	//				if(pf->adjvex==adj)
-	//				{
-	//					beside=true;
-	//					break;
-	//				}
-	//				else
-	//				{
-	//					pf=pf->nextarc;
-	//				}
-	//			}
-	//			if(!beside)
-	//			{
-	//				allbeside=false;
-	//				break;
-	//			}
-	//		}
-	//		if(allbeside)//Vk(p->adjvex)是否是其所有的祖先结点的邻接点
-	//		{
-	//			int i=1;//频繁集层数
-	//			double sup1=dataarray[p->adjvex]->sup;
-	//			double sup2=minsupmap[dataarray[p->adjvex]->bv];
-	//			Stack<int>::iterator itor= s.begin();	
-	//			while (itor != s.end())
-	//			{
-	//				i++;
-	//				sup1=min(sup1,vertices[*itor].data);
-	//				sup2=max(sup2,minsupmap[vertices[*itor].name]);
-	//				itor++;
-	//			}
-
-	//			if(sup1>=sup2)
-	//			{
-	//				bitset<ITEMNUM> bit=dataarray[p->adjvex]->tidlist;
-	//				itor= s.begin();
-	//				while (itor != s.end())
-	//				{
-	//					bit=bit&vertices[*itor].tidlist;
-	//					itor++;
-	//				}
-	//				double sup3=(double)bit.count()/ITEMNUM;
-	//				if(sup3>=sup2)
-	//				{
-	//					if(Lar.size()==i-1)
-	//					{
-	//						Large Li;
-	//						Li.n=0;
-	//						Lar.push_back(Li);
-	//					}
-	//					else if(Lar.size()<i-1)
-	//					{
-	//						cout<<"so wrong!!!"<<endl;
-	//					}
-	//					int *temp=new int[i];
-	//					Stack<int>::iterator itor= s.begin();
-	//					int j=1;
-	//					while (itor != s.end())
-	//					{
-	//						temp[j]=vertices[*itor].name;
-	//						j++;
-	//						itor++;
-	//					}
-	//					Lar[i-1].n++;
-	//					Lar[i-1].p.push_back(temp);
-	//					Lar[i-1].sup.push_back(sup3);
-	//				}
-	//			}
-	//			s.push(p->adjvex);
-	//		}
-	//	}
-	//	else
-	//	{p=p->nextarc;}
-	//}
 	void DFSsearch(vector<Data*> &dataarray, map<int,double>&minsupmap,vector<Large> &Lar)
 	{
 		//深度优先搜索非递归算法
@@ -323,12 +218,20 @@ public:
 			p=vertices[s.top()].firstarc;
 			while(p)
 			{
+				//p=p->nextarc;
 				if(!visited[p->adjvex])
 				{
 					visited[p->adjvex]=1;
 					if(s.size()>=2)
 					{
-						Stack<int>::iterator ii= s.begin();						
+						cout<<dataarray[p->adjvex]->bv<<endl;
+						Stack<int>::iterator ii= s.begin();		
+						while (ii != s.end())
+						{
+							cout<<vertices[*ii].name<<endl;
+							ii++;
+						}
+						cout<<"************************"<<endl;
 						bool allbeside=true;
 						Stack<int>::iterator itor= s.begin();
 						while (itor != s.end())
@@ -393,10 +296,6 @@ public:
 									}
 									int *temp=new int[i];
 									temp[0]=dataarray[p->adjvex]->bv;
-									if(temp[0]==19)
-									{
-										cout<<"a";
-									}
 									Stack<int>::iterator itor= s.begin();
 									int j=1;
 									while (itor != s.end())
@@ -405,19 +304,39 @@ public:
 										j++;
 										itor++;
 									}
+								/*	if(i==2)
+									{
+										cout<<"a";
+									}*/
 									Lar[i-1].n++;
 									Lar[i-1].p.push_back(temp);
 									Lar[i-1].sup.push_back(sup3);
+									s.push(p->adjvex);
+									for(p=vertices[s.top()].firstarc;p!=NULL;p=p->nextarc)
+									{
+										visited[p->adjvex]=0;
+									}
+									p=vertices[s.top()].firstarc;
 								}
+								else
+									p=p->nextarc;
 							}
-							s.push(p->adjvex);
+							else
+								p=p->nextarc;	
 						}
+						else
+							p=p->nextarc;
 					}
 					else
 					{
 						s.push(p->adjvex);
+						for(p=vertices[s.top()].firstarc;p!=NULL;p=p->nextarc)
+						{
+							visited[p->adjvex]=0;
+						}
+						p=vertices[s.top()].firstarc;
 					}
-					break;
+					//break;
 				}
 				else
 					p=p->nextarc;
@@ -733,10 +652,10 @@ int main()
 	ALGraph<int,double, bitset<ITEMNUM>,int> dgGraph(L1.n);
 	dgGraph.CreateDG(dataarray,minsupmap,L2);
 	Lar.push_back(L2);
-
+	dgGraph.displayGraph();
 	while(!dgGraph.isempty())
 	{
-		dgGraph.displayGraph();
+		/*dgGraph.displayGraph();*/
 		dgGraph.DFSsearch(dataarray,minsupmap,Lar);
 		dgGraph.deleteVex();
 		dataarray.erase(dataarray.begin());
@@ -754,7 +673,5 @@ int main()
 			cout<<Lar[i].sup[j]<<endl;
 		}
 	}
-	Rules(Lar);
+	//Rules(Lar);
 }
-
-
